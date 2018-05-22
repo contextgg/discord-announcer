@@ -1,0 +1,19 @@
+language: go
+go:
+- '1.10'
+cache:
+  directories:
+  - tools/bin
+script:
+- CONCURRENT_LINTERS=1 LINTER_DEADLINE=180s make all release
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    secure: aQ2ULSm2YWFz8NbtS9JtBST6be4Qmwlq+PuNUNUjjEC1SvSxanbdzAxGAgiluGWUUSaIwtxjT1k2s+vdqSjj6EK24A/Ish2X+q0blREG7IbDfReC1tuNyOMNSA8zyUTi7x2fa6h/vSSUZwoUMck8DGrPOdnMzakYUfjkbdH2NnB8u0h6D7Pzrx6kVNl0H15fROqbDJeyYxpHT6TIL0HsSxGVEkG5rOM0I+GO3BOYUayfJc57ctwsU/FmI0W69jMXEV6aWpSL4m8shnvGp4hju5A243htTq4ln2sdMrEuzPM4F6iSk0k8PDoO3etWcjqsTVbT+6G0xcyWuzGaOr8sdVs5ynsbv3FiNDwaOITNmAX4PufVzD/xf0H+Nh6MKDIL1444CNxYA9W+MScQHeBLLdtMSk/BZkVJ+FYdPJg2slLWCG9ZS4etQNAUR6ou+JQyZkQZD5fRVvCA2utUc38mjMqfUb8ce9/0ra9c/ig3daiZf7go7lcIM6iYyR/r+qaB4xEe5CYxRwS3pGv6jD77yzf+sg017C4IXtJXbTGoWcBP/3DhWrYL0tiHWVEB1EBcDJDWkjXuY69+pDMeiESSrQbFPo+92X99rMp1sDiBnshgLTkkuXgqP99MFQHSVvivApzgHRuVVSPyRWRnhMm64nRUxUEKod/GfAXnUCvbhk0=
+  file_glob: true
+  file: release/*
+  on:
+    tags: true
+    branch: master
+    repo: nordicgaming/discord-announcer

@@ -1,0 +1,16 @@
+---
+channels:
+  - 439251345002987521
+content: "<@234466834202492928>"
+embed:
+  footer:
+    text: Nordic Gaming
+    icon_url: 'https://cdn.discordapp.com/icons/305294347832786965/31987d4a01aa1ae12ad3f5c44f65e65a.png'
+  url: 'https://twitter.com/nordicgamingorg'
+  title: 'My awesome tool'
+  description: >
+    Find us on Discord
+
+
+    [Nordic Gaming](https://discord.io/nordic)
+  color: 15417381
