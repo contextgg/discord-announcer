@@ -18,8 +18,8 @@ GO_PKGS := $(shell go list ./... | grep -v '/vendor/')
 # GO_CMDS is used to build command binaries (by convention assume to be anything under cmd/)
 GO_CMDS := $(shell find $(CMD_DIR) -mindepth 1 -maxdepth 1 -type d -printf "%f ")
 
-VERSION ?= $(shell git describe --dirty 2>/dev/null)
-VERSION_SHORT ?= $(shell git describe --abbrev=0 2>/dev/null)
+VERSION ?= $(shell git describe --tags --always --dirty='-dev' 2>/dev/null)
+VERSION_SHORT ?= $(shell git describe --tags --always --abbrev=0 2>/dev/null)
 
 ifeq ($(VERSION),)
 VERSION := v0.0.0
