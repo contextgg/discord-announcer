@@ -1,6 +1,7 @@
 package announcer
 
 import (
+	"errors"
 	"log"
 
 	"github.com/bwmarrin/discordgo"
@@ -14,9 +15,28 @@ type Announcer struct {
 
 // NewAnnouncer create a announcer
 func NewAnnouncer(cfg *config.Config) (*Announcer, error) {
-	sess, err := discordgo.New(cfg.Discord.Username, cfg.Discord.Password)
-	if err != nil {
-		return nil, err
+	var err error
+	var sess *discordgo.Session
+
+	if cfg.Discord.BotToken != "" {
+		sess, err = discordgo.New("BOT " + cfg.Discord.BotToken)
+		if err != nil {
+			return nil, err
+		}
+	} else if cfg.Discord.UserToken != "" {
+		sess, err = discordgo.New(cfg.Discord.UserToken)
+		if err != nil {
+			return nil, err
+		}
+	} else if cfg.Discord.Username != "" && cfg.Discord.Password != "" {
+		sess, err = discordgo.New(cfg.Discord.Username, cfg.Discord.Password)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if sess == nil {
+		return nil, errors.New("No session configured")
 	}
 
 	accouncer := &Announcer{
