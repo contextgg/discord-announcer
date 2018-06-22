@@ -9,8 +9,10 @@ import (
 // Config for EventStore and Discord
 type Config struct {
 	Discord struct {
-		Username string
-		Password string
+		BotToken  string
+		UserToken string
+		Username  string
+		Password  string
 	}
 }
 
@@ -20,6 +22,8 @@ func ReadConfig(cfg *Config) error {
 	v.SetEnvPrefix("Announcer")
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
+	v.SetDefault("discord.bottoken", "")
+	v.SetDefault("discord.usertoken", "")
 	v.SetDefault("discord.username", "")
 	v.SetDefault("discord.password", "")
 
