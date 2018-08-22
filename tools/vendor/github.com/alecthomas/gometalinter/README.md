@@ -1,12 +1,15 @@
 # Go Meta Linter
-[![Build Status](https://travis-ci.org/alecthomas/gometalinter.png)](https://travis-ci.org/alecthomas/gometalinter) [![Gitter chat](https://badges.gitter.im/alecthomas.png)](https://gitter.im/alecthomas/Lobby)
+[![Build Status](https://travis-ci.org/alecthomas/gometalinter.svg)](https://travis-ci.org/alecthomas/gometalinter) [![Gitter chat](https://badges.gitter.im/alecthomas.svg)](https://gitter.im/alecthomas/Lobby)
 
 <!-- MarkdownTOC -->
 
+- [Installing](#installing)
 - [Editor integration](#editor-integration)
 - [Supported linters](#supported-linters)
 - [Configuration file](#configuration-file)
-- [Installing](#installing)
+    - [`Format` key](#format-key)
+    - [Format Methods](#format-methods)
+  - [Adding Custom linters](#adding-custom-linters)
 - [Comment directives](#comment-directives)
 - [Quickstart](#quickstart)
 - [FAQ](#faq)
@@ -14,6 +17,7 @@
   - [What's the best way to use `gometalinter` in CI?](#whats-the-best-way-to-use-gometalinter-in-ci)
   - [How do I make `gometalinter` work with Go 1.5 vendoring?](#how-do-i-make-gometalinter-work-with-go-15-vendoring)
   - [Why does `gometalinter --install` install a fork of gocyclo?](#why-does-gometalinter---install-install-a-fork-of-gocyclo)
+  - [Many unexpected errors are being reported](#many-unexpected-errors-are-being-reported)
   - [Gometalinter is not working](#gometalinter-is-not-working)
     - [1. Update to the latest build of gometalinter and all linters](#1-update-to-the-latest-build-of-gometalinter-and-all-linters)
     - [2. Analyse the debug output](#2-analyse-the-debug-output)
@@ -38,6 +42,16 @@ eg.
     stutter.go:12:6:warning: exported type MyStruct should have comment or be unexported (golint)
 
 It is intended for use with editor/IDE integration.
+
+## Installing
+
+There are two options for installing gometalinter.
+
+1. Install a stable version, eg. `go get -u gopkg.in/alecthomas/gometalinter.v2`.
+   I will generally only tag a new stable version when it has passed the Travis
+  regression tests. The downside is that the binary will be called `gometalinter.v2`.
+2. Install from HEAD with: `go get -u github.com/alecthomas/gometalinter`.
+   This has the downside that changes to gometalinter may break.
 
 ## Editor integration
 
@@ -66,7 +80,7 @@ It is intended for use with editor/IDE integration.
 - [errcheck](https://github.com/kisielk/errcheck) - Check that error return values are used.
 - [megacheck](https://github.com/dominikh/go-tools/tree/master/cmd/megacheck) - Run staticcheck, gosimple and unused, sharing work.
 - [dupl](https://github.com/mibk/dupl) - Reports potentially duplicated code.
-- [ineffassign](https://github.com/gordonklaus/ineffassign/blob/master/list) - Detect when assignments to *existing* variables are not used.
+- [ineffassign](https://github.com/gordonklaus/ineffassign) - Detect when assignments to *existing* variables are not used.
 - [interfacer](https://github.com/mvdan/interfacer) - Suggest narrower interfaces that can be used.
 - [unconvert](https://github.com/mdempsky/unconvert) - Detect redundant type conversions.
 - [goconst](https://github.com/jgautheron/goconst) - Finds repeated strings that could be replaced by a constant.
@@ -79,6 +93,8 @@ Disabled by default (enable with `--enable=<linter>`):
 - [gofmt -s](https://golang.org/cmd/gofmt/) - Checks if the code is properly formatted and could not be further simplified.
 - [goimports](https://godoc.org/golang.org/x/tools/cmd/goimports) - Checks missing or unreferenced package imports.
 - [gosimple](https://github.com/dominikh/go-tools/tree/master/cmd/gosimple) - Report simplifications in code.
+- [gochecknoinits](https://4d63.com/gochecknoinits) - Report init functions, to reduce side effects in code.
+- [gochecknoglobals](https://4d63.com/gochecknoglobals) - Report global vars, to reduce side effects in code.
 - [lll](https://github.com/walle/lll) - Report long lines (see `--line-length=N`).
 - [misspell](https://github.com/client9/misspell) - Finds commonly misspelled English words.
 - [nakedret](https://github.com/alexkohler/nakedret) - Finds naked returns.
@@ -91,9 +107,11 @@ Additional linters can be added through the command line with `--linter=NAME:COM
 
 ## Configuration file
 
-gometalinter now supports a JSON configuration file which can be loaded via
-`--config=<file>`. The format of this file is determined by the `Config` struct
-in [config.go](https://github.com/alecthomas/gometalinter/blob/master/config.go).
+gometalinter now supports a JSON configuration file called `.gometalinter.json` that can
+be placed at the root of your project. The configuration file will be automatically loaded
+from the working directory or any parent directory and can be overridden by passing
+`--config=<file>` or ignored with `--no-config`. The format of this file is determined by
+the `Config` struct in [config.go](https://github.com/alecthomas/gometalinter/blob/master/config.go).
 
 The configuration file mostly corresponds to command-line flags, with the following exceptions:
 
@@ -109,6 +127,27 @@ Here is an example configuration file:
   "Enable": ["deadcode", "unconvert"]
 }
 ```
+
+If a `.gometalinter.json` file is loaded, individual options can still be overridden by
+passing command-line flags. All flags are parsed in order, meaning configuration passed
+with the `--config` flag will override any command-line flags passed before and be
+overridden by flags passed after.
+
+
+#### `Format` key
+
+The default `Format` key places the different fields of an `Issue` into a template. this
+corresponds to the `--format` option command-line flag.
+
+Default `Format`:
+```
+Format: "{{.Path}}:{{.Line}}:{{if .Col}}{{.Col}}{{end}}:{{.Severity}}: {{.Message}} ({{.Linter}})"
+```
+
+#### Format Methods
+
+* `{{.Path.Relative}}` - equivalent to `{{.Path}}` which outputs a relative path to the file
+* `{{.Path.Abs}}` - outputs an absolute path to the file
 
 ### Adding Custom linters
 
@@ -137,16 +176,6 @@ Example:
 ```
 $ gometalinter --linter='vet:go tool vet -printfuncs=Infof,Debugf,Warningf,Errorf:PATH:LINE:MESSAGE' .
 ```
-
-## Installing
-
-There are two options for installing gometalinter.
-
-1. Install a stable version, eg. `go get -u gopkg.in/alecthomas/gometalinter.v1`.
-   I will generally only tag a new stable version when it has passed the Travis
-  regression tests. The downside is that the binary will be called `gometalinter.v1`.
-2. Install from HEAD with: `go get -u github.com/alecthomas/gometalinter`.
-   This has the downside that changes to gometalinter may break.
 
 ## Comment directives
 
@@ -288,6 +317,13 @@ subdirectories even when just a single directory is specified. This made it
 unusably slow when vendoring. The recursive behaviour can be achieved with
 gometalinter by explicitly specifying `<path>/...`. There is a
 [pull request](https://github.com/fzipp/gocyclo/pull/1) open.
+
+### Many unexpected errors are being reported
+
+If you see a whole bunch of errors being reported that you wouldn't expect,
+such as compile errors, this typically means that something is wrong with your
+Go environment. Try `go install` and fix any issues with your go installation,
+then try gometalinter again.
 
 ### Gometalinter is not working
 

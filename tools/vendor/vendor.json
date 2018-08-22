@@ -39,10 +39,10 @@
 			"revisionTime": "2015-02-08T22:17:26Z"
 		},
 		{
-			"checksumSHA1": "HL3Dyr4dmbtBo+V3ULfRJMWAyoA=",
+			"checksumSHA1": "XbzbQiYeAvpy62yWFFa3oO9v4WM=",
 			"path": "github.com/alecthomas/gometalinter",
-			"revision": "212b1b91e362ea0b0e441c9b53ce31e81405c240",
-			"revisionTime": "2017-11-26T10:02:12Z"
+			"revision": "43330fbef467e1b6b8c9b742515e266832450564",
+			"revisionTime": "2018-07-05T10:49:45Z"
 		},
 		{
 			"checksumSHA1": "fCc3grA7vIxfBru7R3SqjcW+oLI=",
@@ -147,10 +147,10 @@
 			"revisionTime": "2017-07-03T17:01:52Z"
 		},
 		{
-			"checksumSHA1": "NKvKUGq0lp/GjLS7Ffp7BAjcoTg=",
+			"checksumSHA1": "FEAHzwQhwPrKpaEz3yPimQB/Ios=",
 			"path": "github.com/kardianos/govendor",
-			"revision": "d644d03c4cc00cf7c88a365de8508c12ce56c392",
-			"revisionTime": "2017-11-27T22:34:05Z"
+			"revision": "9a2e603240c8c945d098dbd2ce3249ee46bde4e7",
+			"revisionTime": "2018-04-10T03:32:22Z"
 		},
 		{
 			"checksumSHA1": "m24kWw3bFoAkKVvTjmxSLsywdHY=",
@@ -243,10 +243,10 @@
 			"revisionTime": "2016-11-30T08:01:11Z"
 		},
 		{
-			"checksumSHA1": "+ArBDwAK19OC1iDy1yEbXOC9sgQ=",
+			"checksumSHA1": "qHys8NBCZsdbnLZskSANR3e9lL0=",
 			"path": "github.com/mattn/goveralls",
-			"revision": "b71a1e4855f87991aff01c2c833a75a07059c61c",
-			"revisionTime": "2017-11-14T04:29:57Z"
+			"revision": "e68c968003c2db2ad7cdf07b3c012c5ab12248a7",
+			"revisionTime": "2018-07-02T08:12:47Z"
 		},
 		{
 			"checksumSHA1": "dk0ehYSmMaGLWFQPND3cVgk744I=",
@@ -763,5 +763,5 @@
 			"revisionTime": "2017-11-25T20:11:03Z"
 		}
 	],
-	"rootPath": "github.com/wrouesnel/self-contained-go-project/tools"
+	"rootPath": "github.com/nordicgaming/discord-announcer/tools"
 }

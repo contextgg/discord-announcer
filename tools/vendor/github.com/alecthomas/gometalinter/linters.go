@@ -200,7 +200,7 @@ func validateLinters(linters map[string]*Linter, config *Config) error {
 	return nil
 }
 
-const vetPattern = `^(?:vet:.*?\.go:\s+(?P<path>.*?\.go):(?P<line>\d+):(?P<col>\d+):\s*(?P<message>.*))|(?:(?P<path>.*?\.go):(?P<line>\d+):\s*(?P<message>.*))$`
+const vetPattern = `^(?:vet:.*?\.go:\s+(?P<path>.*?\.go):(?P<line>\d+):(?P<col>\d+):\s*(?P<message>.*))|((?P<path>.*?\.go):(?P<line>\d+):(?P<col>\d+):\s*(?P<message>.*))|(?:(?P<path>.*?\.go):(?P<line>\d+):\s*(?P<message>.*))$`
 
 var defaultLinters = map[string]LinterConfig{
 	"maligned": {
@@ -237,6 +237,22 @@ var defaultLinters = map[string]LinterConfig{
 		InstallFrom:       "github.com/GoASTScanner/gas",
 		PartitionStrategy: partitionPathsAsFiles,
 		defaultEnabled:    true,
+		IsFast:            true,
+	},
+	"gochecknoinits": {
+		Command:           `gochecknoinits`,
+		Pattern:           `^(?P<path>.*?\.go):(?P<line>\d+) (?P<message>.*)`,
+		InstallFrom:       "4d63.com/gochecknoinits",
+		PartitionStrategy: partitionPathsAsDirectories,
+		defaultEnabled:    false,
+		IsFast:            true,
+	},
+	"gochecknoglobals": {
+		Command:           `gochecknoglobals`,
+		Pattern:           `^(?P<path>.*?\.go):(?P<line>\d+) (?P<message>.*)`,
+		InstallFrom:       "4d63.com/gochecknoglobals",
+		PartitionStrategy: partitionPathsAsDirectories,
+		defaultEnabled:    false,
 		IsFast:            true,
 	},
 	"goconst": {
@@ -328,7 +344,7 @@ var defaultLinters = map[string]LinterConfig{
 		defaultEnabled:    true,
 	},
 	"misspell": {
-		Command:           `misspell -j 1`,
+		Command:           `misspell -j 1 --locale "{misspelllocale}"`,
 		Pattern:           `PATH:LINE:COL:MESSAGE`,
 		InstallFrom:       "github.com/client9/misspell/cmd/misspell",
 		PartitionStrategy: partitionPathsAsFiles,
@@ -361,12 +377,12 @@ var defaultLinters = map[string]LinterConfig{
 	},
 	"test": {
 		Command:           `go test`,
-		Pattern:           `^--- FAIL: .*$\s+(?P<path>.*?\.go):(?P<line>\d+): (?P<message>.*)$`,
+		Pattern:           `(?m:^\t(?P<path>.*?\.go):(?P<line>\d+): (?P<message>.+)$)`,
 		PartitionStrategy: partitionPathsAsPackages,
 	},
 	"testify": {
 		Command:           `go test`,
-		Pattern:           `Location:\s+(?P<path>.*?\.go):(?P<line>\d+)$\s+Error:\s+(?P<message>[^\n]+)`,
+		Pattern:           `(?m:^\s+Error Trace:\s+(?P<path>.+?.go):(?P<line>\d+)\n\s+Error:\s+(?P<message>.+?)[:\s]*$)`,
 		PartitionStrategy: partitionPathsAsPackages,
 	},
 	"unconvert": {
@@ -396,17 +412,16 @@ var defaultLinters = map[string]LinterConfig{
 		defaultEnabled:    true,
 	},
 	"vet": {
-		Command:           `govet --no-recurse`,
+		Command:           `go vet`,
 		Pattern:           vetPattern,
-		InstallFrom:       "github.com/dnephin/govet",
-		PartitionStrategy: partitionPathsAsDirectories,
+		PartitionStrategy: partitionPathsAsPackages,
 		defaultEnabled:    true,
 		IsFast:            true,
 	},
 	"vetshadow": {
-		Command:           `govet --no-recurse --shadow`,
+		Command:           `go vet --shadow`,
 		Pattern:           vetPattern,
-		PartitionStrategy: partitionPathsAsDirectories,
+		PartitionStrategy: partitionPathsAsPackages,
 		defaultEnabled:    true,
 		IsFast:            true,
 	},
